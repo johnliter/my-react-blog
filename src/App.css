@@ -1,0 +1,520 @@
+/* Space background with enhanced linear gradient */
+body {
+  margin: 0;
+  background: linear-gradient(
+    135deg,
+    #0a0f2a 0%,
+    #1a2c38 20%,
+    #26c6da 40%,
+    #ab47bc 60%,
+    #3a1b5a 80%,
+    #0a0f2a 100%
+  );
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  position: relative;
+  transition: background 0.3s;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.App {
+  text-align: center;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  color: #e0e1dd;
+  background-color: rgba(13, 27, 42, 0.85);
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(38, 198, 218, 0.2);
+  position: relative;
+  z-index: 1;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.App.dark-mode {
+  background-color: rgba(10, 15, 42, 0.95);
+  color: #d1e8ff;
+}
+
+h1 {
+  color: #ab47bc;
+  text-shadow: 0 0 10px rgba(171, 71, 188, 0.7), 0 0 20px rgba(171, 71, 188, 0.5);
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+
+.App.dark-mode h1 {
+  color: #d81b60;
+  text-shadow: 0 0 10px rgba(216, 27, 96, 0.7), 0 0 20px rgba(216, 27, 96, 0.5);
+}
+
+/* Form styling - Match post width (only for search input) */
+input {
+  display: block;
+  width: calc(100% - 40px);
+  margin: 15px auto;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #1a2c38;
+  border: 2px solid #26c6da;
+  color: #e0e1dd;
+  border-radius: 8px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  max-width: 860px;
+}
+
+.App.dark-mode input {
+  background-color: #0a1f2e;
+  border-color: #d81b60;
+  color: #d1e8ff;
+}
+
+input:focus {
+  outline: none;
+  border-color: #ab47bc;
+  box-shadow: 0 0 10px rgba(171, 71, 188, 0.5);
+}
+
+.App.dark-mode input:focus {
+  border-color: #d81b60;
+  box-shadow: 0 0 10px rgba(216, 27, 96, 0.5);
+}
+
+button {
+  padding: 12px 25px;
+  background-color: #ab47bc;
+  color: #e0e1dd;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+  font-size: 16px;
+  margin: 5px;
+}
+
+.App.dark-mode button {
+  background-color: #d81b60;
+}
+
+button:hover {
+  background-color: #26c6da;
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(38, 198, 218, 0.5);
+}
+
+.App.dark-mode button:hover {
+  background-color: #ec407a;
+  box-shadow: 0 0 15px rgba(236, 64, 122, 0.5);
+}
+
+button.active {
+  background-color: #26c6da;
+  color: #e0e1dd;
+}
+
+.App.dark-mode button.active {
+  background-color: #ec407a;
+  color: #d1e8ff;
+}
+
+/* Post styling with nebula glow */
+.post {
+  background-color: #1a2c38;
+  border: 2px solid #26c6da;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 10px;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.3s;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.App.dark-mode .post {
+  background-color: #0a1f2e;
+  border-color: #d81b60;
+}
+
+.post:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(171, 71, 188, 0.4), 0 0 30px rgba(38, 198, 218, 0.3);
+}
+
+.App.dark-mode .post:hover {
+  box-shadow: 0 0 20px rgba(216, 27, 96, 0.4), 0 0 30px rgba(236, 64, 122, 0.3);
+}
+
+/* Post header with title and share button */
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.post h2 {
+  color: #ab47bc;
+  text-shadow: 0 0 5px rgba(171, 71, 188, 0.5);
+  font-size: 1.5em;
+  margin: 0;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.App.dark-mode .post h2 {
+  color: #d81b60;
+  text-shadow: 0 0 5px rgba(216, 27, 96, 0.5);
+}
+
+/* Post content */
+.post-content {
+  color: #e0e1dd;
+  font-size: 1em;
+  margin: 10px 0;
+  text-align: left;
+}
+
+.App.dark-mode .post-content {
+  color: #d1e8ff;
+}
+
+.post-content p {
+  margin: 10px 0;
+}
+
+.post-content a {
+  color: #26c6da;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.post-content a:hover {
+  color: #ab47bc;
+  text-decoration: underline;
+}
+
+.App.dark-mode .post-content a {
+  color: #ec407a;
+}
+
+.App.dark-mode .post-content a:hover {
+  color: #d81b60;
+}
+
+/* Navigation buttons */
+.nav-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.nav-buttons button {
+  margin: 0 10px;
+}
+
+/* About Me section */
+.about-me {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.about-me h2 {
+  color: #ab47bc;
+  text-shadow: 0 0 5px rgba(171, 71, 188, 0.5);
+  font-size: 2em;
+  margin-bottom: 15px;
+}
+
+.App.dark-mode .about-me h2 {
+  color: #d81b60;
+  text-shadow: 0 0 5px rgba(216, 27, 96, 0.5);
+}
+
+.about-content {
+  color: #e0e1dd;
+  font-size: 1em;
+  text-align: left;
+}
+
+.App.dark-mode .about-content {
+  color: #d1e8ff;
+}
+
+.about-content p {
+  margin: 10px 0;
+}
+
+.about-content a {
+  color: #26c6da;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.about-content a:hover {
+  color: #ab47bc;
+  text-decoration: underline;
+}
+
+.App.dark-mode .about-content a {
+  color: #ec407a;
+}
+
+.App.dark-mode .about-content a:hover {
+  color: #d81b60;
+}
+
+/* Comments section */
+.comments-section {
+  margin-top: 20px;
+}
+
+.comments-section h3 {
+  color: #ab47bc;
+  text-shadow: 0 0 5px rgba(171, 71, 188, 0.5);
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.App.dark-mode .comments-section h3 {
+  color: #d81b60;
+  text-shadow: 0 0 5px rgba(216, 27, 96, 0.5);
+}
+
+.comments-section ul {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+
+.comments-section li {
+  background-color: #2a3b50;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+.App.dark-mode .comments-section li {
+  background-color: #1a2c38;
+}
+
+.comments-section input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+  background-color: #1a2c38;
+  border: 2px solid #26c6da;
+  color: #e0e1dd;
+  border-radius: 5px;
+}
+
+.App.dark-mode .comments-section input {
+  background-color: #0a1f2e;
+  border-color: #d81b60;
+  color: #d1e8ff;
+}
+
+.comments-section input:focus {
+  outline: none;
+  border-color: #ab47bc;
+  box-shadow: 0 0 10px rgba(171, 71, 188, 0.5);
+}
+
+.App.dark-mode .comments-section input:focus {
+  border-color: #d81b60;
+  box-shadow: 0 0 10px rgba(216, 27, 96, 0.5);
+}
+
+/* Timestamp styling */
+.timestamp {
+  display: block;
+  font-size: 0.8em;
+  color: #e0e1dd;
+  opacity: 0.7;
+  text-shadow: 0 0 3px rgba(38, 198, 218, 0.5);
+  text-align: left;
+}
+
+.App.dark-mode .timestamp {
+  color: #d1e8ff;
+  text-shadow: 0 0 3px rgba(236, 64, 122, 0.5);
+}
+
+/* Share button */
+.share-btn {
+  padding: 8px 15px;
+  color: #e0e1dd;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  background-color: #4CAF50;
+}
+
+.share-btn:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+.App.dark-mode .share-btn {
+  background-color: #66bb6a;
+}
+
+.App.dark-mode .share-btn:hover {
+  background-color: #81c784;
+}
+
+/* Search and category styling */
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.search-bar input {
+  width: 50%;
+  max-width: 400px;
+  margin: 0 10px;
+}
+
+.App.dark-mode .search-bar input {
+  background-color: #0a1f2e;
+  border-color: #d81b60;
+  color: #d1e8ff;
+}
+
+.category-select {
+  padding: 10px;
+  background-color: #1a2c38;
+  border: 2px solid #26c6da;
+  color: #e0e1dd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.App.dark-mode .category-select {
+  background-color: #0a1f2e;
+  border-color: #d81b60;
+  color: #d1e8ff;
+}
+
+/* Dark mode toggle */
+.dark-mode-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 8px 15px;
+  background-color: #ab47bc;
+  color: #e0e1dd;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  z-index: 2;
+}
+
+.App.dark-mode .dark-mode-toggle {
+  background-color: #d81b60;
+}
+
+.dark-mode-toggle:hover {
+  background-color: #26c6da;
+  transform: scale(1.05);
+}
+
+.App.dark-mode .dark-mode-toggle:hover {
+  background-color: #ec407a;
+}
+
+/* Canvas for stars */
+#star-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .App {
+    margin: 20px auto;
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  input,
+  .post,
+  .about-me {
+    max-width: 100%;
+    width: calc(100% - 20px);
+  }
+
+  .search-bar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .search-bar input {
+    width: 80%;
+    margin: 5px 0;
+  }
+
+  .category-select {
+    width: 80%;
+    margin: 5px 0;
+  }
+
+  .nav-buttons {
+    flex-direction: column;
+  }
+
+  .nav-buttons button {
+    width: 80%;
+    margin: 5px 0;
+  }
+
+  .dark-mode-toggle {
+    top: 5px;
+    right: 5px;
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+
+  .post-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .share-btn {
+    margin-top: 5px;
+  }
+
+  .comments-section input {
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2em;
+  }
+
+  .post h2,
+  .about-me h2 {
+    font-size: 1.2em;
+  }
+
+  .timestamp {
+    font-size: 0.7em;
+  }
+}
