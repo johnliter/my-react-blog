@@ -105,13 +105,12 @@ function App() {
 
   // Firebase configuration (replace with your own config)
   const firebaseConfig = {
-    apiKey: "your-api-key",
-    authDomain: "your-auth-domain",
-    databaseURL: "your-database-url",
-    projectId: "your-project-id",
-    storageBucket: "your-storage-bucket",
-    messagingSenderId: "your-messaging-sender-id",
-    appId: "your-app-id",
+    apiKey: "AIzaSyC_tevdJYc52sRQkowltufSIvmpMYvReEc",
+    authDomain: "myreactblog-a9e51.firebaseapp.com",
+    projectId: "myreactblog-a9e51",
+    storageBucket: "myreactblog-a9e51.firebasestorage.app",
+    messagingSenderId: "981993871401",
+    appId: "1:981993871401:web:52a98a6efe42fb6b926438"
   };
 
   // Initialize Firebase
