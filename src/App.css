@@ -46,6 +46,8 @@ h1 {
   text-shadow: 0 0 10px rgba(171, 71, 188, 0.7), 0 0 20px rgba(171, 71, 188, 0.5);
   font-size: 2.5em;
   margin-bottom: 20px;
+  position: relative;
+  z-index: 2; /* Ensure title is above other elements */
 }
 
 .App.dark-mode h1 {
@@ -452,6 +454,10 @@ button.active {
     max-width: 100%;
   }
 
+  h1 {
+    margin-top: 50px; /* Add space for the dark mode button */
+  }
+
   input,
   .post,
   .about-me {
@@ -476,18 +482,23 @@ button.active {
 
   .nav-buttons {
     flex-direction: column;
+    align-items: center; /* Center the buttons */
   }
 
   .nav-buttons button {
     width: 80%;
+    max-width: 200px; /* Limit width for better appearance */
     margin: 5px 0;
   }
 
   .dark-mode-toggle {
-    top: 5px;
-    right: 5px;
-    padding: 6px 12px;
-    font-size: 14px;
+    position: static; /* Remove absolute positioning on mobile */
+    display: block;
+    margin: 10px auto; /* Center the button */
+    width: 80%;
+    max-width: 200px; /* Match nav buttons */
+    top: auto;
+    right: auto;
   }
 
   .post-header {
@@ -507,6 +518,7 @@ button.active {
 @media (max-width: 480px) {
   h1 {
     font-size: 2em;
+    margin-top: 40px; /* Adjust for smaller screens */
   }
 
   .post h2,
@@ -516,5 +528,15 @@ button.active {
 
   .timestamp {
     font-size: 0.7em;
+  }
+
+  .dark-mode-toggle {
+    width: 90%;
+    max-width: 150px;
+  }
+
+  .nav-buttons button {
+    width: 90%;
+    max-width: 150px;
   }
 }

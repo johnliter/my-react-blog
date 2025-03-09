@@ -3,7 +3,55 @@ import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, push, onValue } from "firebase/database";
+import { BrowserRouter as Router, Routes, Route, Link, useParams } from "react-router-dom";
 import "./App.css";
+
+// Component for displaying a single post
+function PostPage({ posts, comments, handleCommentSubmit, renderContent }) {
+  const { id } = useParams();
+  const post = posts.find((p) => p.id === parseInt(id));
+
+  if (!post) {
+    return <div className="post">Post not found.</div>;
+  }
+
+  return (
+    <div className="post">
+      <div className="post-header">
+        <h2>{post.title}</h2>
+        <Link to="/">
+          <button className="share-btn">Back to Blog</button>
+        </Link>
+      </div>
+      <div className="post-content">{renderContent(post.content)}</div>
+      <span className="timestamp">
+        Posted on: {new Date(post.timestamp).toLocaleString()} | Category: {post.category}
+      </span>
+      <div className="comments-section">
+        <h3>Comments</h3>
+        <ul>
+          {comments[id] &&
+            Object.entries(comments[id]).map(([commentId, comment]) => (
+              <li key={commentId}>
+                {comment.text} (by {comment.author} on{" "}
+                {new Date(comment.timestamp).toLocaleString()})
+              </li>
+            ))}
+        </ul>
+        <input
+          type="text"
+          placeholder="Add a comment..."
+          onKeyPress={(e) => {
+            if (e.key === "Enter" && e.target.value.trim()) {
+              handleCommentSubmit(post.id, e.target.value);
+              e.target.value = "";
+            }
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 function App() {
   const posts = [
@@ -100,20 +148,18 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activePage, setActivePage] = useState("blog");
   const [comments, setComments] = useState({});
 
-  // Firebase configuration (replace with your own config)
   const firebaseConfig = {
     apiKey: "AIzaSyC_tevdJYc52sRQkowltufSIvmpMYvReEc",
     authDomain: "myreactblog-a9e51.firebaseapp.com",
     projectId: "myreactblog-a9e51",
     storageBucket: "myreactblog-a9e51.firebasestorage.app",
     messagingSenderId: "981993871401",
-    appId: "1:981993871401:web:52a98a6efe42fb6b926438"
+    appId: "1:981993871401:web:52a98a6efe42fb6b926438",
+    databaseURL: "https://myreactblog-a9e51.firebaseio.com",
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
 
@@ -121,7 +167,6 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
-    // Fetch comments from Firebase
     const commentsRef = ref(database, "comments");
     onValue(commentsRef, (snapshot) => {
       const data = snapshot.val();
@@ -131,9 +176,80 @@ function App() {
 
   const sharePost = (id) => {
     const postUrl = `${window.location.origin}/post/${id}`;
-    navigator.clipboard.writeText(postUrl).then(() => {
-      alert("Post URL copied to clipboard!");
-    });
+    const shareData = {
+      title: `Check out this post from John's Cosmic Coding Journey`,
+      text: `I found this interesting post on John's Cosmic Coding Journey:`,
+      url: postUrl,
+    };
+
+    // Log to help debug
+    console.log("Attempting to share with Web Share API:", navigator.share ? "Supported" : "Not supported");
+    console.log("Clipboard API support:", navigator.clipboard ? "Supported" : "Not supported");
+
+    // Check if Web Share API is supported
+    if (navigator.share && typeof navigator.share === "function") {
+      navigator
+        .share(shareData)
+        .then(() => {
+          console.log("Shared successfully!");
+        })
+        .catch((error) => {
+          console.error("Error with Web Share API:", error);
+          // Fallback to clipboard if Web Share API fails
+          copyToClipboard(postUrl);
+        });
+    } else {
+      // Fallback to Clipboard API
+      copyToClipboard(postUrl);
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    // First, try the Clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          console.log("Successfully copied to clipboard using Clipboard API");
+          alert("Post URL copied to clipboard!");
+        })
+        .catch((error) => {
+          console.error("Failed to copy with Clipboard API:", error);
+          // Fallback to textarea method if Clipboard API fails
+          fallbackCopyToClipboard(text);
+        });
+    } else {
+      // Fallback to textarea method if Clipboard API is not supported
+      console.log("Clipboard API not supported, using textarea fallback");
+      fallbackCopyToClipboard(text);
+    }
+  };
+
+  // Fallback method using a temporary textarea element
+  const fallbackCopyToClipboard = (text) => {
+    try {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed"; // Prevent scrolling to bottom of page in Safari
+      textArea.style.opacity = "0"; // Make it invisible
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      const successful = document.execCommand("copy");
+      document.body.removeChild(textArea);
+
+      if (successful) {
+        console.log("Successfully copied to clipboard using textarea fallback");
+        alert("Post URL copied to clipboard!");
+      } else {
+        console.error("Textarea copy failed");
+        alert("Failed to copy URL. Please copy it manually: " + text);
+      }
+    } catch (error) {
+      console.error("Error with textarea fallback:", error);
+      alert("Failed to copy URL. Please copy it manually: " + text);
+    }
   };
 
   const filteredPosts = posts.filter((post) => {
@@ -144,7 +260,6 @@ function App() {
     return matchesSearch && matchesCategory;
   });
 
-  // Function to render post content with syntax highlighting
   const renderContent = (content) => {
     const parts = content.split(/\n\s*\n/);
     const elements = [];
@@ -187,7 +302,6 @@ function App() {
     return elements;
   };
 
-  // About Me content
   const aboutMeContent = `
     Hi! I'm John Liter, a web development enthusiast exploring React and creative design. 
     This blog is my space to share my learning journey, from mastering React components to deploying apps on Netlify. 
@@ -195,7 +309,6 @@ function App() {
     [Connect with me on GitHub](https://github.com/johliter) | [Email me](mailto:jliterblog@gmail.com)
   `;
 
-  // Handle comment submission
   const handleCommentSubmit = (postId, commentText) => {
     const commentsRef = ref(database, "comments/" + postId);
     push(commentsRef, {
@@ -206,96 +319,116 @@ function App() {
   };
 
   return (
-    <div className={`App ${isDarkMode ? "dark-mode" : ""}`}>
-      <canvas id="star-canvas" style={{ pointerEvents: "none" }}></canvas>
-      <button
-        className="dark-mode-toggle"
-        onClick={() => setIsDarkMode(!isDarkMode)}
-      >
-        {isDarkMode ? "Light Mode" : "Dark Mode"}
-      </button>
-      <h1>My React Learning Blog</h1>
-      <div className="nav-buttons">
+    <Router>
+      <div className={`App ${isDarkMode ? "dark-mode" : ""}`}>
+        <canvas id="star-canvas" style={{ pointerEvents: "none" }}></canvas>
         <button
-          className={activePage === "blog" ? "active" : ""}
-          onClick={() => setActivePage("blog")}
+          className="dark-mode-toggle"
+          onClick={() => setIsDarkMode(!isDarkMode)}
         >
-          Blog
+          {isDarkMode ? "Light Mode" : "Dark Mode"}
         </button>
-        <button
-          className={activePage === "about" ? "active" : ""}
-          onClick={() => setActivePage("about")}
-        >
-          About Me
-        </button>
-      </div>
-      {activePage === "blog" ? (
-        <>
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search posts..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <select
-              className="category-select"
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-            >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            {filteredPosts.map((post) => (
-              <div key={post.id} className="post">
-                <div className="post-header">
-                  <h2>{post.title}</h2>
-                  <button className="share-btn" onClick={() => sharePost(post.id)}>
-                    Share
-                  </button>
-                </div>
-                <div className="post-content">{renderContent(post.content)}</div>
-                <span className="timestamp">
-                  Posted on: {new Date(post.timestamp).toLocaleString()} | Category: {post.category}
-                </span>
-                <div className="comments-section">
-                  <h3>Comments</h3>
-                  <ul>
-                    {comments[post.id] &&
-                      Object.entries(comments[post.id]).map(([commentId, comment]) => (
-                        <li key={commentId}>
-                          {comment.text} (by {comment.author} on{" "}
-                          {new Date(comment.timestamp).toLocaleString()})
-                        </li>
-                      ))}
-                  </ul>
+        <h1>John's Cosmic Coding Journey</h1>
+        <div className="nav-buttons">
+          <Link to="/">
+            <button className={window.location.pathname === "/" ? "active" : ""}>
+              Blog
+            </button>
+          </Link>
+          <Link to="/about">
+            <button className={window.location.pathname === "/about" ? "active" : ""}>
+              About Me
+            </button>
+          </Link>
+        </div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <div className="search-bar">
                   <input
                     type="text"
-                    placeholder="Add a comment..."
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter" && e.target.value.trim()) {
-                        handleCommentSubmit(post.id, e.target.value);
-                        e.target.value = "";
-                      }
-                    }}
+                    placeholder="Search posts..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
+                  <select
+                    className="category-select"
+                    value={filterCategory}
+                    onChange={(e) => setFilterCategory(e.target.value)}
+                  >
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+                <div>
+                  {filteredPosts.map((post) => (
+                    <div key={post.id} className="post">
+                      <div className="post-header">
+                        <h2>{post.title}</h2>
+                        <button className="share-btn" onClick={() => sharePost(post.id)}>
+                          Share
+                        </button>
+                      </div>
+                      <div className="post-content">{renderContent(post.content)}</div>
+                      <span className="timestamp">
+                        Posted on: {new Date(post.timestamp).toLocaleString()} | Category: {post.category}
+                      </span>
+                      <div className="comments-section">
+                        <h3>Comments</h3>
+                        <ul>
+                          {comments[post.id] &&
+                            Object.entries(comments[post.id]).map(([commentId, comment]) => (
+                              <li key={commentId}>
+                                {comment.text} (by {comment.author} on{" "}
+                                {new Date(comment.timestamp).toLocaleString()})
+                              </li>
+                            ))}
+                        </ul>
+                        <input
+                          type="text"
+                          placeholder="Add a comment..."
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter" && e.target.value.trim()) {
+                              handleCommentSubmit(post.id, e.target.value);
+                              e.target.value = "";
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <div className="about-me">
+                <h2>About Me</h2>
+                <div className="about-content">{renderContent(aboutMeContent)}</div>
               </div>
-            ))}
-          </div>
-        </>
-      ) : (
-        <div className="about-me">
-          <h2>About Me</h2>
-          <div className="about-content">{renderContent(aboutMeContent)}</div>
-        </div>
-      )}
-    </div>
+            }
+          />
+          <Route
+            path="/post/:id"
+            element={
+              <PostPage
+                posts={posts}
+                comments={comments}
+                handleCommentSubmit={handleCommentSubmit}
+                renderContent={renderContent}
+              />
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
